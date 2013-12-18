@@ -58,7 +58,7 @@ namespace Kiout.Models
         public async Task UpdateGroup(Group group)
         {
             var entry = _db.Entry(group);
-            if (entry.State == EntityState.Unchanged)
+            if (entry.State == EntityState.Detached)
             {
                 _db.Set<Group>().Attach(group);
             }
