@@ -1,0 +1,102 @@
+﻿@model Kiout.Models.AddStudent
+
+@{
+    ViewBag.Title = "Добавить студента в учебную группу";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+<div>
+    @Html.ActionLink("Учебные группы", "Index") > @ViewBag.Title
+</div>
+<br /><br />
+<div class="alert alert-danger error-area" style="display: none"></div>
+<br />
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "add-emp-form" }))
+{
+    @Html.HiddenFor(model => model.Group.Title)
+    @Html.HiddenFor(model => model.Group.InstructorId)
+    @Html.HiddenFor(model => model.Group.CourseId)
+    
+    @Html.LabelFor(model => model.Group.Title)
+   <div>
+       @Html.DisplayTextFor(model => model.Group.Title)
+   </div>
+   <br />
+   @Html.LabelFor(model => model.Group.Instructor.FullName)
+   <div>
+       @Html.DisplayTextFor(model => model.Group.Instructor.FullName)
+    </div>
+    <br />
+    @Html.HiddenFor(model => model.Group.Id)
+    <div class="form-group">
+        <div class="form-group">
+            @Html.LabelFor(model => model.OrganizationId, "Организация", new { @class = "control-label" })
+            <div class="org-list">
+                @Html.DropDownList("OrganizationId")
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="form-group">
+            @Html.LabelFor(model => model.NewStudentId, "Сотрудник", new { @class = "control-label" })
+            <div>
+                <select id="NewStudentId" name="NewStudentId">
+                </select>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-default add-btn">Добавить</button>
+}
+<script type="text/javascript">
+
+    function getEmployees(orgId) {
+        var organizationId = orgId;
+        var groupId = $("#Group_Id").val();
+
+        $.ajax({
+            url: "@(Url.Action("GetPossibleStudents", "Organization"))",
+            type: "POST",
+            data: {
+                organizationId: organizationId,
+                groupId: groupId
+            },
+            success: function (employees) {
+                var $empList = $("#NewStudentId");
+                $empList.empty();
+                for (var i = 0; i < employees.length; i++) {
+                    $empList.append("<option value='" + employees[i].id + "'>" + employees[i].fullName + "</option>");
+                }
+            }
+        });
+    };      
+
+    $(function () {
+        var $orgList = $(".org-list select");
+        getEmployees($orgList.val());
+        $orgList.change(function (e) {
+            getEmployees($(this).val());
+        });
+        
+        var $form = $(".add-emp-form");
+        $form.unbind("submit");
+        $form.bind("submit", function () {
+            $.ajax({
+                url: $form.attr("action"),
+                type: $form.attr("method"),
+                data: $form.serialize(),
+                error: function () {
+                    $(".error-area").empty();
+                    $(".error-area").append("Невозможно добавить сотрудника");
+                    $(".error-area").css("display", "block");
+                },
+                success: function () {
+                    window.location = "@(Url.Action("Edit", new { id = Model.Group.Id }))";
+                }
+            });
+
+            return false;
+        });
+    });
+
+</script>

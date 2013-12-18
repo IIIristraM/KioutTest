@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Kiout.Models.GroupInfoViewModel>
+
+@{
+    ViewBag.Title = "Учебные группы";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    @ViewBag.Title
+</div>
+<br /><br />
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Group.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Group.Сourse.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Group.Instructor.FullName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StudentsCount)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Group.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Group.Сourse.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Group.Instructor.FullName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StudentsCount)
+        </td>
+        <td>
+            @Html.ActionLink("Редактировать", "Edit", new { id = item.Group.Id }) |
+            @Html.ActionLink("Удалить", "Delete", new { id = item.Group.Id })
+        </td>
+    </tr>
+}
+
+</table>
+
+<p>
+    @Html.ActionLink("Создать новую учебную группу", "Create")
+</p>

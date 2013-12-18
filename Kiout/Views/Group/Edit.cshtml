@@ -1,0 +1,92 @@
+﻿@model Kiout.Models.Group
+
+@{
+    ViewBag.Title = "Редактировать учебную группу";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+<div>
+    @Html.ActionLink("Учебные группы", "Index") > @ViewBag.Title
+</div>
+<br /><br />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.LabelFor(model => model.Instructor.FullName)
+    <div>
+        @Html.HiddenFor(model => model.InstructorId)
+        @Html.DisplayTextFor(model => model.Instructor.FullName)
+    </div>
+    <br />
+    <div>
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, new { @class = "control-label" })
+            <div>
+                @Html.EditorFor(model => model.Title)
+                @Html.ValidationMessageFor(model => model.Title)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CourseId, "Курс", new { @class = "control-label" })
+            <div>
+                @Html.DropDownList("CourseId")
+                @Html.ValidationMessageFor(model => model.CourseId)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <input type="submit" value="Сохранить" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    
+}
+    <br /><br />
+    <table class="table">
+        <tr>
+            <th>
+                Студент
+            </th>
+            <th>
+                Организация
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.Emoployees)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Organization.Title)
+                </td>
+                <td>
+                    @using (Html.BeginForm("DeleteStudent", "Group", FormMethod.Post, new { id = "delete_" + item.Id }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="groupId" value="@Model.Id" />
+                        <input type="hidden" name="employeeId" value="@item.Id" />
+                        <a href="#" onclick="$('#delete_' + @item.Id).submit()">Удалить из группы</a>
+                    }
+                </td>
+
+            </tr>
+        }
+
+    </table>
+    <div>
+        @Html.ActionLink("Добавить студента", "AddStudent", new { groupId = Model.Id })
+    </div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
